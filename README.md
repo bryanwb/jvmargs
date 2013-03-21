@@ -24,7 +24,7 @@ Features
   we add  "-Xmx128M" to the list of jvmargs but "-Xmx256M" is already
   present. "-Xmx128M" will overwrite the previous "-Xmx256M". 
 * Allows the quick and easy population of certain arguments per conventions
-* Ensures that Maximum and Minimum heap size are always equal, because
+* TODO: Ensures that Maximum and Minimum heap size are always equal, because
   they should be.
 * Inserts a space at the beginning and end of the returned string
 

@@ -2,8 +2,10 @@ module JVMArgs
 
   class Directive
 
+    attr_accessor :key, :value
+
     def initialize(arg)
-      arg.sub!(/^-?D?/, '')
+      arg.sub!(/^-?/, '')
     
       if arg =~ /(.*?)=(.*)/
         @key = $1
@@ -22,9 +24,6 @@ module JVMArgs
       end
     end
 
-    def key
-      @key
-    end
    
   end
 
@@ -70,20 +69,59 @@ module JVMArgs
   
   class Args
     
-    def initialize(initial_args=[],*named_args)
+    def initialize(*initial_args)
       @args = Hash.new()
       server_arg = JVMArgs::Standard.new("-server")
       @args[server_arg.key] = server_arg
-      @args['Xmx'] = JVMArgs::NonStandard.new("Xmx128M")
-      @args['Xms'] = JVMArgs::NonStandard.new("Xms128M")
+      set_default_heap_size
 
-      if initial_args.class == Hash and named_args.empty?
-        parse_named_args(initial_args)
-      elsif !named_args.empty?
-        parse_named_args(named_args)
+      initial_args.flatten!
+      
+      if !initial_args.empty?
+        if initial_args[-1].class == Hash
+          parse_named_args(initial_args[-1])
+          if initial_args.length >= 2
+            parse_args([0..-2])
+          end
+        else
+          parse_args(initial_args)
+        end
       end
     end
 
+    def [](key)
+      @args[key]
+    end
+    
+    def parse_args(args)
+      args.each do |arg|
+        jvm_arg = case arg
+                  when /^-?XX.*/
+                    JVMArgs::NonStandard.new(arg)
+                  when /^-?X.*/
+                    JVMArgs::NonStandard.new(arg)
+                  when /^-?D.*/
+                    JVMArgs::Directive.new(arg)
+                  else
+                    JVMArgs::Standard.new(arg)
+                  end
+        @args[jvm_arg.key] = jvm_arg
+      end
+    end
+
+    def set_default_heap_size
+      if defined? node
+        total_ram = node['memory']['total'].sub(/kB/, '')
+      else
+        require 'ohai'
+        ohai = Ohai::System.new
+        ohai.require_plugin "linux::memory"
+        total_ram = (ohai["memory"]["total"].sub(/kB/,'').to_i * 0.4).to_i
+      end
+      @args['Xmx'] = JVMArgs::NonStandard.new("Xmx#{total_ram}K")
+      @args['Xms'] = JVMArgs::NonStandard.new("Xms#{total_ram}K")
+    end
+    
     def to_s
       args_str = @args.map {|k,v| v.to_s }
       " " + args_str.join(' ') + " "
