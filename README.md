@@ -13,12 +13,33 @@ Puppet as well.
 I hope this helps stop some of the relentless cargo-culting of Java
 command-line arguments.
 
+This library parse JVM options so that any given option is only stored
+once. It does this by breaking each option into one of the three
+option categories:
+
+1. standard, ex: -server, -enablesystemassertions
+2. nonstandard, ex: -Xmx128M, -Xint
+3. unstable, ex: -XX:-DisableExplicitGC, -XX:AltStack=128M
+4. directive, ex: -Dcom.sun.management.jmxremote
+
+JVMArgs will ensure that only one value is stored for any given
+option. Here is a quick example
+
+```Ruby
+args = JVMArgs::Args.new("-XX:-DisableExplicitGC", "-Xmx256M")
+# "-XX:-DisableExplicitGC" is now stored in args
+args.add("-XX:+DisableExplicitGC")
+args.add("-Xmx2G")
+# the settings are now "-XX:+DisableExplicitGC" and "-Xmx2G"
+```
+
+
 Features
 --------
 
 * Raises an error if you try to allocate a larger heap
   size than your system has available.
-* Allocates 40% of available RAM for the jvm heap if not specified
+* Allocates 40% of available RAM for the jvm heap if "-Xmx" is not specified
 * Ensures that there are no duplicate arguments. A duplicate of an
   existing entry overwrites the existing one. For example, let's say
   we add  "-Xmx128M" to the list of jvmargs but "-Xmx256M" is already
