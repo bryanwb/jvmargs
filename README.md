@@ -5,7 +5,9 @@ A painless parser of java command-line arguments
 
 Managing Java command-line arguments is a pain in the ass. I have
 felt this pain in the many, many chef cookbooks I have written for
-java applications.
+java applications. This parser does not handle all aspects of a java
+program invocation. It does not find the java executable for you, nor
+does it handle any argument that is space delimited.
 
 This is currently chef-specific but I would love to see it support
 Puppet as well.
@@ -31,8 +33,9 @@ args = JVMArgs::Args.new("-XX:-DisableExplicitGC", "-Xmx256M")
 args.add("-XX:+DisableExplicitGC")
 args.add("-Xmx2G")
 # the settings are now "-XX:+DisableExplicitGC" and "-Xmx2G"
+args.to_s
+" -server -XX:+DisableExplicitGC -Xmx2G "
 ```
-
 
 Features
 --------
