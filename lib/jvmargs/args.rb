@@ -37,7 +37,7 @@ module JVMArgs
     def process_rules(key)
       unless @rules[key].nil?
         @rules[key].each do |rule|
-          rule.call
+          rule.call(key,@args)
         end
       end
     end

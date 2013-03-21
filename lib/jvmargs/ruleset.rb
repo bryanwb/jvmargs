@@ -3,6 +3,7 @@ module JVMArgs
 
     def initialize()
       @rules = Hash.new
+      @rules['Xmx'] = JVMArgs::HeapRules
     end
     
     def add(key, rule)

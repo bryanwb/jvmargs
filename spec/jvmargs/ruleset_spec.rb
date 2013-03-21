@@ -12,7 +12,7 @@ describe JVMArgs::RuleSet do
     rules = JVMArgs::RuleSet.new
     p = Proc.new { puts 'hello world' }
     rules.add('Xmx', p)
-    rules['Xmx'].send("[]".to_sym,0).should == p
+    rules['Xmx'].send("[]".to_sym,0).class.should == Proc
   end
 
 end

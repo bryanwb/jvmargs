@@ -77,6 +77,10 @@ describe JVMArgs::Args do
     sorted_args.sort!
     sorted_args.should == target_list
   end
+
+  it "won't let you set heap size greater than system ram" do
+    lambda { JVMArgs::Args.new("-Xmx9999999999999K") }.should raise_error(ArgumentError)
+  end
   
 end
 
