@@ -3,7 +3,7 @@ module JVMArgs
     
     def initialize(*initial_args)
       @args = Hash.new
-      JVMArgs::Types.each {|type| @args[type] = {} }
+      Types.each {|type| @args[type] = Hash.new }
       server_arg = JVMArgs::Standard.new("-server")
       @args[:standard][server_arg.key] = server_arg
       set_default_heap_size
@@ -23,6 +23,10 @@ module JVMArgs
         end
       end
     end
+
+    def [](key)
+      @args[key]
+    end
     
     def parse_args(args)
       args.each do |arg|
@@ -30,7 +34,7 @@ module JVMArgs
         jvm_arg = case arg
                   when /^-?XX.*/
                     type = :unstable
-                    JVMArgs::NonStandard.new(arg)
+                    JVMArgs::Unstable.new(arg)
                   when /^-?X.*/
                     type = :nonstandard
                     JVMArgs::NonStandard.new(arg)
@@ -41,7 +45,7 @@ module JVMArgs
                     type = :standard
                     JVMArgs::Standard.new(arg)
                   end
-        @args[:type][jvm_arg.key] = jvm_arg
+        @args[type][jvm_arg.key] = jvm_arg
       end
     end
 
@@ -60,7 +64,7 @@ module JVMArgs
     
     def to_s
       args_str = ""
-      JVMARGS::Types.each do |type|
+      Types.each do |type|
         type_str = @args[type].map {|k,v| v.to_s }
         args_str << " " + type_str.join(' ') + " "
       end
