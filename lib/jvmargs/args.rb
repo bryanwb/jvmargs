@@ -83,7 +83,7 @@ module JVMArgs
     def add_default_jmx
       [
        "-Djava.rmi.server.hostname=127.0.0.1",
-       "-Dcom.sun.management.jmxremote",
+       "-Djava.net.preferIPv4Stack=true",
        "-Dcom.sun.management.jmxremote",
        "-Dcom.sun.management.jmxremote.port=9000",
        "-Dcom.sun.management.jmxremote.authenticate=false",
