@@ -3,6 +3,7 @@ module JVMArgs
     
     def initialize(*initial_args)
       @args = Hash.new
+      @rules = RuleSet.new
       Types.each {|type| @args[type] = Hash.new }
       server_arg = JVMArgs::Standard.new("-server")
       @args[:standard][server_arg.key] = server_arg
@@ -27,6 +28,19 @@ module JVMArgs
     def [](key)
       @args[key]
     end
+
+    def add(*args)
+      args.flatten!
+      parse_args(args)
+    end
+    
+    def process_rules(key)
+      unless @rules[key].nil?
+        @rules[key].each do |rule|
+          rule.call
+        end
+      end
+    end
     
     def parse_args(args)
       args.each do |arg|
@@ -46,6 +60,7 @@ module JVMArgs
                     JVMArgs::Standard.new(arg)
                   end
         @args[type][jvm_arg.key] = jvm_arg
+        process_rules(jvm_arg.key)
       end
     end
 
