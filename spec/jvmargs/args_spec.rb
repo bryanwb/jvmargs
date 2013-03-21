@@ -27,31 +27,12 @@ describe JVMArgs::Args do
     args = JVMArgs::Args.new
     args.to_s.should include "-Xmx#{heap_size.to_i}K"
   end
-
   
   it "overwrites an existing argument w/ new value" do
     args = JVMArgs::Args.new("-Xmx295M", "Xms295M")
     args.to_s.should include "-Xmx295M"
-    args["Xmx"].value.should == "295M"
-    args["Xms"].value.should == "295M"
-  end
-
-  it "handles a directive with a value" do
-    args = JVMArgs::Args.new("-Djava.util.logging.config.file=/foo/conf/logging.properties")
-    args['Djava.util.logging.config.file'].value.should == "/foo/conf/logging.properties"
-  end
-
-  it "handles a boolean directive" do
-    pending
-  end
-
-  it "parses unstable option w/ value" do
-    # args = JVMArgs::Args.new("-XX:MaxPermSize=256m")
-    pending
-  end
-
-  it "parses unstable boolean option" do
-    pending
+    args[:nonstandard]["Xmx"].value.should == "295M"
+    args[:nonstandard]["Xms"].value.should == "295M"
   end
 
   
