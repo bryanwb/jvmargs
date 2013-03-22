@@ -11,8 +11,8 @@ describe JVMArgs::Args do
     args_str.should include "-Xms"
   end
 
-  it "provide jmx values if specified" do
-    args = JVMArgs::Args.new({:jmx => true})
+  it "provide jmx values if specified by block" do
+    args = JVMArgs::Args.new(){ jmx true}
     args_str = args.to_s
     args_str.should include "-Djava.rmi.server.hostname=127.0.0.1"
     args_str.should include "-Dcom.sun.management.jmxremote"

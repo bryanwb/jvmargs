@@ -7,6 +7,13 @@ module JVMArgs
       ohai.require_plugin "linux::memory"
       total_ram = (ohai["memory"]["total"].sub(/kB/,'').to_i * 0.4).to_i
     end
+
+    def convert_to_k(number)
+      puts 'foo'
+      # measure = 
+      # case measure
+      # end
+    end
     
   end
 end

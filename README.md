@@ -51,8 +51,34 @@ Features
 * Inserts a space at the beginning and end of the returned string
 
 
+Usage
+=====
+
+The following are all valid invocations of the constructor. You can
+optionally pass a block that invokes helper methods
+
+```Ruby
+
+JVMArgs::Args.new("Xmx256M")
+JVMArgs::Args.new("-Xmx256m") # yields the same result as previous
+JVMArgs::Args.new("Xmx256M") { jmx true}
+JVMArgs::Args.new("-Xint") do 
+  jmx true 
+  heap_size "60%" 
+end
+
+bunch_of_args = [ "-Xrs", "-DSERVER_DATA_DIR=/data/Data/", "-Xmx2560m", "-Xms2560m" ]
+JVMArgs::Args.new(bunch_of_args)
+```
+
+jvmargs has several helper methods
+
+* heap_size(percentage): set the default heap_size to a percentage of total system RAM
+* jmx(boolean): set up default jmx settings
+
+
 Examples
---------
+========
 
 Here is the simplest possible use. Notice that max heap size and
 minimum heap size are set to the same value and jvmargs assumes that
@@ -73,7 +99,7 @@ plugin locally.
 
 ```Ruby
 require 'jvmargs'
-java_opts = JVMArgs::Args.new("-Xmx512M", "-XX:MaxPermSize=256m", {:jmx => true}) 
+java_opts = JVMArgs::Args.new("-Xmx512M", "-XX:MaxPermSize=256m"){ jmx  true} 
 # the value of java_opts.to_s is
 # " -Xmx512M -Xms512M -XX:MaxPermSize=256m -server -Djava.rmi.server.hostname=127.0.0.1 \
 # -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9000 \
@@ -88,8 +114,7 @@ attributes or in arguments to an LWRP.
 
 ```Ruby
 require 'jvmargs'
-java_opts = JVMArgs::Args.new("-Xmx512M", "-XX:MaxPermSize=256m", {:jmx =>
-true}) 
+java_opts = JVMArgs::Args.new("-Xmx512M", "-XX:MaxPermSize=256m")
 # node['tomcat']['max_heap_size'] is "-Xmx2048M"
 java_opts.store(node['tomcat']['max_heap_size'])
 # the -Xmx and -Xms arguments are now "-Xmx2048M" and "-Xms2048M"
@@ -99,8 +124,7 @@ There are a couple friendly helper functions
 
 ```Ruby
 require 'jvmargs'
-java_opts = JVMArgs::Args.new("-Xmx512M", "-XX:MaxPermSize=256m", {:jmx =>
-true}) 
+java_opts = JVMArgs::Args.new("-Xmx512M", "-XX:MaxPermSize=256m"){jmx true} 
 java_opts.heap_size("2048M")
 java_opts.permgen("256M")
 # the -Xmx and -Xms arguments are now "-Xmx2048M" and "-Xms2048M"
