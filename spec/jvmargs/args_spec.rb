@@ -20,12 +20,11 @@ describe JVMArgs::Args do
     args_str.should include "-Dcom.sun.management.jmxremote.ssl=false"
   end
 
-  it "can set heap_size by a percentage" do
+  it "set heap_size by a percentage" do
     args = JVMArgs::Args.new { heap_size "70%" }
     args_str = args.to_s
     percent_int = JVMArgs::Util.get_system_ram_m.sub(/M/,'').to_i
     percentage_ram = (percent_int * 0.7).to_i
-    require 'pry'; binding.pry
     args_str.should include "-Xmx#{percentage_ram}M"
     args_str.should include "-Xmx#{percentage_ram}M"
   end
@@ -95,5 +94,15 @@ describe JVMArgs::Args do
     lambda { JVMArgs::Args.new("-Xmx99M", "-Xms200M") }.should raise_error(ArgumentError)
   end
 
+  it "allows you to define a new rule" do
+    args = JVMArgs::Args.new("-Xmx200M")
+    args.add_rule(:equal_max_min_heap) do
+      value = args[:nonstandard]['Xmx'].value  
+      args[:nonstandard]['Xms'].value = value
+    end
+    args_str = args.to_s
+    args_str.should include "-Xms200M"
+  end
+  
 end
 

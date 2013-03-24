@@ -25,7 +25,7 @@ option categories:
 4. directive, ex: -Dcom.sun.management.jmxremote
 
 JVMArgs will ensure that only one value is stored for any given
-option. Here is a quick example
+option. Here is a quick example:
 
 ```Ruby
 args = JVMArgs::Args.new("-XX:-DisableExplicitGC", "-Xmx256M")
@@ -76,6 +76,16 @@ jvmargs has several helper methods
 * heap_size(percentage): set the default heap_size to a percentage of total system RAM
 * jmx(boolean): set up default jmx settings
 
+You can also add arbitrary rules that are enforced when the `to_s`
+method is called. 
+
+```Ruby
+args = JVMArgs::Args.new("Xmx256M")
+args.add_rule(:equal_max_min_heap) do
+  value = args[:nonstandard]['Xmx'].value  
+  args[:nonstandard]['Xms'].value = value
+end
+```
 
 Examples
 ========

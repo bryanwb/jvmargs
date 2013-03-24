@@ -107,6 +107,9 @@ module JVMArgs
       @args[:nonstandard]["Xmx"] = "-Xmx#{percentage_ram}M"
       @args[:nonstandard]["Xms"] = "-Xms#{percentage_ram}M"
     end
-    
+
+    def add_rule(rule_name, &block)
+      JVMArgs::Rules.define_singleton_method(rule_name.to_sym){ block }
+    end
   end
 end
