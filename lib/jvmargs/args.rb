@@ -23,11 +23,9 @@ module JVMArgs
       parse_args(args)
     end
     
-    def process_rules(key)
-      unless @rules[key].nil?
-        @rules[key].each do |rule|
-          rule.call(key,@args)
-        end
+    def process_rules
+      @rules.each do |rule|
+        JVMArgs::Rules.send(rule, @args)
       end
     end
     
@@ -50,9 +48,7 @@ module JVMArgs
                   end
         @args[type][jvm_arg.key] = jvm_arg
       end
-      Types.each do |type|
-        @args[type].keys.each {|key| process_rules(key) }
-      end
+      process_rules
     end
 
     def set_default_heap_size

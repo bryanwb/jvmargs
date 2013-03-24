@@ -2,25 +2,27 @@ module JVMArgs
   class RuleSet
 
     def initialize()
-      @rules = Hash.new
-      @rules['Xmx'] = JVMArgs::HeapRules
+      @rules = Array.new
+      JVMArgs::Rules.singleton_methods(false).each do |m|
+        @rules << m
+      end
     end
     
-    def add(key, rule)
+    def add(rule)
       if rule.class != Proc
         raise ArgumentError, "The add method only accepts Proc objects as the second argument "
       end
-      @rules[key] ||= []
-      @rules[key] << rule
+      @rules ||= []
+      @rules << rule
     end
 
-    def keys
-      @rules.keys
+    def each
+      @rules.each {|rule| yield(rule) }
     end
 
-    def [](key)
-      @rules[key]
+    def [](index)
+      @rules[index]
     end
-
+    
   end
 end

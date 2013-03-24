@@ -1,5 +1,5 @@
 module JVMArgs
-  module Rules
+  class Rules 
 
     def self.heap_too_big(key="Xmx",args)
       total_ram = JVMArgs::Util.get_raw_num(JVMArgs::Util.get_system_ram_m)

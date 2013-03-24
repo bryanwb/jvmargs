@@ -5,7 +5,7 @@ require 'jvmargs/standard'
 require 'jvmargs/nonstandard'
 require 'jvmargs/unstable'
 require 'jvmargs/ruleset'
-require 'jvmargs/heaprules'
+require 'jvmargs/rules'
 require 'jvmargs/util'
 
 module JVMArgs
