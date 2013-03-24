@@ -20,6 +20,16 @@ describe JVMArgs::Args do
     args_str.should include "-Dcom.sun.management.jmxremote.ssl=false"
   end
 
+  it "can set heap_size by a percentage" do
+    args = JVMArgs::Args.new { heap_size "70%" }
+    args_str = args.to_s
+    percent_int = JVMArgs::Util.get_system_ram_m.sub(/M/,'').to_i
+    percentage_ram = (percent_int * 0.7).to_i
+    require 'pry'; binding.pry
+    args_str.should include "-Xmx#{percentage_ram}M"
+    args_str.should include "-Xmx#{percentage_ram}M"
+  end
+  
   it "sets the max heap size to 40% of available RAM if not specified" do
     total_ram = JVMArgs::Util.get_system_ram_m
     heap_size = total_ram.to_i * 0.4

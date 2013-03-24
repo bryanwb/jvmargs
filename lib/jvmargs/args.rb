@@ -94,9 +94,19 @@ module JVMArgs
       end
     end
 
-    # def heap_size(percentage)
-
-    # end
+    def heap_size(percentage)
+      percentage =~ /([0-9]+)%/
+      percent = $1.to_i * 0.01
+      if percent > 1
+        raise ArgumentError, "heap_size percentage must be less than 100%, you provided #{$1}%"
+      elsif percent < 0.01
+        raise ArgumentError, "heap_size percentage must be between 100% - 1%, you provided #{$1}%"
+      end
+      percent_int = JVMArgs::Util.get_system_ram_m.sub(/M/,'').to_i
+      percentage_ram = (percent_int * percent).to_i
+      @args[:nonstandard]["Xmx"] = "-Xmx#{percentage_ram}M"
+      @args[:nonstandard]["Xms"] = "-Xms#{percentage_ram}M"
+    end
     
   end
 end
