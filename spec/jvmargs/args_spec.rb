@@ -8,7 +8,6 @@ describe JVMArgs::Args do
     args_str = args.to_s
     args_str.should include "-server"
     args_str.should include "-Xmx"
-    args_str.should include "-Xms"
   end
 
   it "provide jmx values if specified by block" do
@@ -22,10 +21,10 @@ describe JVMArgs::Args do
   end
 
   it "sets the max heap size to 40% of available RAM if not specified" do
-    total_ram = get_total_ram_kb
+    total_ram = JVMArgs::Util.get_system_ram_m
     heap_size = total_ram.to_i * 0.4
     args = JVMArgs::Args.new
-    args.to_s.should include "-Xmx#{heap_size.to_i}K"
+    args.to_s.should include "-Xmx#{heap_size.to_i}M"
   end
   
   it "overwrites an existing argument w/ new value" do
@@ -55,7 +54,7 @@ describe JVMArgs::Args do
                              "-DSERVER_DATA_DIR=/data/Data/",
                              "-Xmx2560m",
                              "-Xms2560m",
-                             "-XX:MaxPermSize=256m"
+                             "-XX:MaxPermSize=256M"
                              )
     target_list = [
                    "-Djava.util.logging.config.file=/usr/local/tomcat/conf/logging.properties",
@@ -67,20 +66,24 @@ describe JVMArgs::Args do
                    "-XX:+UseBiasedLocking",
                    "-Xrs",
                    "-DSERVER_DATA_DIR=/data/Data/",
-                   "-Xmx2560m",
-                   "-Xms2560m",
-                   "-XX:MaxPermSize=256m",
+                   "-Xmx2560M",
+                   "-Xms2560M",
+                   "-XX:MaxPermSize=256M",
                    "-server"
                   ]
     target_list.sort!
     sorted_args = args.to_s.split(" ").select {|arg| arg != " " }
     sorted_args.sort!
-    sorted_args.should == target_list
+    sorted_args.should =~ target_list
   end
 
   it "won't let you set heap size greater than system ram" do
     lambda { JVMArgs::Args.new("-Xmx9999999999999K") }.should raise_error(ArgumentError)
   end
-  
+
+  it "won't let you set heap size greater than minimum heap size" do
+    lambda { JVMArgs::Args.new("-Xmx99M", "-Xms200M") }.should raise_error(ArgumentError)
+  end
+
 end
 

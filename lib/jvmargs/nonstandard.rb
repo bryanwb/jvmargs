@@ -6,7 +6,11 @@ module JVMArgs
       arg.sub!(/^-/, '')
       arg =~ /(X[a-z]+)([0-9]+[a-zA-Z])?/
       @key = $1
-      @value = $2.nil? ? true : $2
+      if $2.nil?
+        @value =  true
+      else
+        @value = JVMArgs::Util.convert_to_m($2)
+      end
     end
     
     def to_s

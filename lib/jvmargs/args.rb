@@ -49,7 +49,9 @@ module JVMArgs
                     JVMArgs::Standard.new(arg)
                   end
         @args[type][jvm_arg.key] = jvm_arg
-        process_rules(jvm_arg.key)
+      end
+      Types.each do |type|
+        @args[type].keys.each {|key| process_rules(key) }
       end
     end
 
@@ -57,13 +59,9 @@ module JVMArgs
       if defined? node
         total_ram = node['memory']['total'].sub(/kB/, '')
       else
-        require 'ohai'
-        ohai = Ohai::System.new
-        ohai.require_plugin "linux::memory"
-        total_ram = (ohai["memory"]["total"].sub(/kB/,'').to_i * 0.4).to_i
+        total_ram = (JVMArgs::Util.get_system_ram_m.sub(/M/,'').to_i * 0.4).to_i
       end
-      @args[:nonstandard]['Xmx'] = JVMArgs::NonStandard.new("Xmx#{total_ram}K")
-      @args[:nonstandard]['Xms'] = JVMArgs::NonStandard.new("Xms#{total_ram}K")
+      @args[:nonstandard]['Xmx'] = JVMArgs::NonStandard.new("Xmx#{total_ram}M")
     end
     
     def to_s
