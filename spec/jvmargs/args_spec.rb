@@ -41,7 +41,6 @@ describe JVMArgs::Args do
     size = "123M"
     args = JVMArgs::Args.new { permgen size }
     args_str = args.to_s
-    # args_str.should include "-XX:PermSize=#{size}"
     args_str.should include "-XX:MaxPermSize=#{size}"
   end
   
