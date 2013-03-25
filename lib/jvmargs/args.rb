@@ -1,31 +1,32 @@
 module JVMArgs
   class Args
     
-    def initialize(*initial_args)
+    def initialize(*initial_args,&block)
       @args = Hash.new
+      @rules = JVMArgs::Rules.new
       Types.each {|type| @args[type] = Hash.new }
       server_arg = JVMArgs::Standard.new("-server")
       @args[:standard][server_arg.key] = server_arg
       set_default_heap_size
-      initial_args.flatten!
-      parse_initial_args(initial_args)
-    end
-
-    def parse_initial_args(initial_args)
-        if !initial_args.empty?
-        if initial_args[-1].class == Hash
-          parse_named_args(initial_args[-1])
-          if initial_args.length >= 2
-            parse_args([0..-2])
-          end
-        else
-          parse_args(initial_args)
-        end
-      end
+      # in case user passed in an array
+      initial_args.flatten!  
+      parse_args(initial_args) unless initial_args.empty?
+      self.instance_exec &block if block
     end
 
     def [](key)
       @args[key]
+    end
+
+    def add(*args)
+      args.flatten!
+      parse_args(args)
+    end
+    
+    def process_rules
+      @rules.rules.each do |rule|
+       @rules.send(rule, @args)
+      end
     end
     
     def parse_args(args)
@@ -47,22 +48,20 @@ module JVMArgs
                   end
         @args[type][jvm_arg.key] = jvm_arg
       end
+      process_rules
     end
 
     def set_default_heap_size
       if defined? node
         total_ram = node['memory']['total'].sub(/kB/, '')
       else
-        require 'ohai'
-        ohai = Ohai::System.new
-        ohai.require_plugin "linux::memory"
-        total_ram = (ohai["memory"]["total"].sub(/kB/,'').to_i * 0.4).to_i
+        total_ram = (JVMArgs::Util.get_system_ram_m.sub(/M/,'').to_i * 0.4).to_i
       end
-      @args[:nonstandard]['Xmx'] = JVMArgs::NonStandard.new("Xmx#{total_ram}K")
-      @args[:nonstandard]['Xms'] = JVMArgs::NonStandard.new("Xms#{total_ram}K")
+      @args[:nonstandard]['Xmx'] = JVMArgs::NonStandard.new("Xmx#{total_ram}M")
     end
     
     def to_s
+      process_rules
       args_str = ""
       Types.each do |type|
         type_str = @args[type].map {|k,v| v.to_s }
@@ -80,18 +79,39 @@ module JVMArgs
       end
     end
 
-    def add_default_jmx
-      [
-       "-Djava.rmi.server.hostname=127.0.0.1",
-       "-Djava.net.preferIPv4Stack=true",
-       "-Dcom.sun.management.jmxremote",
-       "-Dcom.sun.management.jmxremote.port=9000",
-       "-Dcom.sun.management.jmxremote.authenticate=false",
-       "-Dcom.sun.management.jmxremote.ssl=false"
-      ].each do |arg|
-        directive = JVMArgs::Directive.new arg
-        @args[:directive][directive.key] = directive
+    def jmx(boolean)
+      if boolean
+        [
+         "-Djava.rmi.server.hostname=127.0.0.1",
+         "-Djava.net.preferIPv4Stack=true",
+         "-Dcom.sun.management.jmxremote",
+         "-Dcom.sun.management.jmxremote.port=9000",
+         "-Dcom.sun.management.jmxremote.authenticate=false",
+         "-Dcom.sun.management.jmxremote.ssl=false"
+        ].each do |arg|
+          directive = JVMArgs::Directive.new arg
+          @args[:directive][directive.key] = directive
+        end
       end
     end
+
+    def heap_size(percentage)
+      percentage =~ /([0-9]+)%/
+      percent = $1.to_i * 0.01
+      if percent > 1
+        raise ArgumentError, "heap_size percentage must be less than 100%, you provided #{$1}%"
+      elsif percent < 0.01
+        raise ArgumentError, "heap_size percentage must be between 100% - 1%, you provided #{$1}%"
+      end
+      percent_int = JVMArgs::Util.get_system_ram_m.sub(/M/,'').to_i
+      percentage_ram = (percent_int * percent).to_i
+      @args[:nonstandard]["Xmx"] = JVMArgs::NonStandard.new("-Xmx#{percentage_ram}M")
+      @args[:nonstandard]["Xms"] = JVMArgs::NonStandard.new("-Xms#{percentage_ram}M")
+    end
+
+    def add_rule(rule_name, &block)
+      @rules.add(rule_name, block)
+    end
+
   end
 end
