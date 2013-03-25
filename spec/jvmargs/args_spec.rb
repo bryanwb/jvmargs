@@ -36,6 +36,14 @@ describe JVMArgs::Args do
     args_str.should include "-Xms#{percentage_ram}M"
     args_str.should include "-Xmx#{percentage_ram}M"
   end
+
+  it "set permgen in MB" do
+    size = "123M"
+    args = JVMArgs::Args.new { permgen size }
+    args_str = args.to_s
+    # args_str.should include "-XX:PermSize=#{size}"
+    args_str.should include "-XX:MaxPermSize=#{size}"
+  end
   
   it "sets the max heap size to 40% of available RAM if not specified" do
     total_ram = JVMArgs::Util.get_system_ram_m

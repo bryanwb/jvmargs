@@ -116,6 +116,12 @@ module JVMArgs
       @args[:nonstandard]["Xms"] = JVMArgs::NonStandard.new("-Xms#{size_ram}")
     end
 
+    def permgen(size)
+      size_ram = JVMArgs::Util.convert_to_m(size)
+      # @args[:unstable]["PermSize"] = JVMArgs::Unstable.new("-XX:PermSize=#{size_ram}")
+      @args[:unstable]["MaxPermSize"] = JVMArgs::Unstable.new("-XX:MaxPermSize=#{size_ram}")
+    end
+
     def add_rule(rule_name, &block)
       @rules.add(rule_name, block)
     end
