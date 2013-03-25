@@ -97,8 +97,10 @@ describe JVMArgs::Args do
   it "allows you to define a new rule" do
     args = JVMArgs::Args.new("-Xmx200M")
     args.add_rule(:equal_max_min_heap) do
-      value = args[:nonstandard]['Xmx'].value  
+      args[:nonstandard]['Xms'] = JVMArgs::NonStandard.new("Xms128M")
+      value = args[:nonstandard]['Xmx'].value
       args[:nonstandard]['Xms'].value = value
+      require 'pry'; binding.pry
     end
     args_str = args.to_s
     args_str.should include "-Xms200M"

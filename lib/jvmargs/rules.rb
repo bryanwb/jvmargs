@@ -1,6 +1,19 @@
 module JVMArgs
   class Rules 
 
+    def self.add(rule_name, block)
+      JVMArgs::Rules.define_singleton_method(rule_name.to_sym) {|args| block.call(args) }
+    end
+
+    def self.rules
+      JVMArgs::Rules.singleton_methods(false)
+    end
+    
+    def self.[](index)
+      @rules[index]
+    end
+
+    
     def self.heap_too_big(key="Xmx",args)
       total_ram = JVMArgs::Util.get_raw_num(JVMArgs::Util.get_system_ram_m)
       new_ram = JVMArgs::Util.get_raw_num(args[:nonstandard][key].value)

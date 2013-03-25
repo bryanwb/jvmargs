@@ -3,7 +3,6 @@ module JVMArgs
     
     def initialize(*initial_args,&block)
       @args = Hash.new
-      @rules = RuleSet.new
       Types.each {|type| @args[type] = Hash.new }
       server_arg = JVMArgs::Standard.new("-server")
       @args[:standard][server_arg.key] = server_arg
@@ -24,7 +23,8 @@ module JVMArgs
     end
     
     def process_rules
-      @rules.each do |rule|
+      JVMArgs::Rules.rules.each do |rule|
+        require 'pry' ; binding.pry
         JVMArgs::Rules.send(rule, @args)
       end
     end
@@ -109,7 +109,8 @@ module JVMArgs
     end
 
     def add_rule(rule_name, &block)
-      JVMArgs::Rules.define_singleton_method(rule_name.to_sym){ block }
+      JVMArgs::Rules.add(rule_name, block)
     end
+
   end
 end
