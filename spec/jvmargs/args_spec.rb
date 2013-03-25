@@ -20,12 +20,20 @@ describe JVMArgs::Args do
     args_str.should include "-Dcom.sun.management.jmxremote.ssl=false"
   end
 
+  it "set heap_size in MB" do
+    size = "1234M"
+    args = JVMArgs::Args.new { heap_size size }
+    args_str = args.to_s
+    args_str.should include "-Xms#{size}"
+    args_str.should include "-Xmx#{size}"
+  end
+  
   it "set heap_size by a percentage" do
     args = JVMArgs::Args.new { heap_size "70%" }
     args_str = args.to_s
     percent_int = JVMArgs::Util.get_system_ram_m.sub(/M/,'').to_i
     percentage_ram = (percent_int * 0.7).to_i
-    args_str.should include "-Xmx#{percentage_ram}M"
+    args_str.should include "-Xms#{percentage_ram}M"
     args_str.should include "-Xmx#{percentage_ram}M"
   end
   
