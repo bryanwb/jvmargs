@@ -82,9 +82,8 @@ method is called.
 ```Ruby
 args = JVMArgs::Args.new("Xmx256M")
 args.add_rule(:equal_max_min_heap) do |args|
-  args[:nonstandard]['Xms'] = JVMArgs::NonStandard.new("Xms128M")
   value = args[:nonstandard]['Xmx'].value
-  args[:nonstandard]['Xms'].value = value
+  args[:nonstandard]['Xms'].value = value JVMArgs::NonStandard.new("Xms#{value}")
 end
 ```
 
