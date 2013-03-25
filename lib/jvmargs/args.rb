@@ -95,18 +95,36 @@ module JVMArgs
       end
     end
 
-    def heap_size(percentage)
-      percentage =~ /([0-9]+)%/
-      percent = $1.to_i * 0.01
-      if percent > 1
-        raise ArgumentError, "heap_size percentage must be less than 100%, you provided #{$1}%"
-      elsif percent < 0.01
-        raise ArgumentError, "heap_size percentage must be between 100% - 1%, you provided #{$1}%"
+    def heap_size(size)
+      if (size =~ /([0-9]+)%/)
+        percent = $1.to_i * 0.01
+        if percent > 1
+          raise ArgumentError, "heap_size percentage must be less than 100%, you provided #{$1}%"
+        elsif percent < 0.01
+          raise ArgumentError, "heap_size percentage must be between 100% - 1%, you provided #{$1}%"
+        end
+        system_ram = JVMArgs::Util.get_system_ram_m.sub(/M/,'').to_i
+        size_ram = "#{(system_ram * percent).to_i}M"
+      else
+        begin
+          size_ram = JVMArgs::Util.convert_to_m(size)
+        rescue ArgumentError
+           raise ArgumentError, "heap_size percentage must be a percentage or a fixed size in KiloBytes(K), MegaBytes (M), or Gigabytes(G)"
+        end 
       end
-      percent_int = JVMArgs::Util.get_system_ram_m.sub(/M/,'').to_i
-      percentage_ram = (percent_int * percent).to_i
-      @args[:nonstandard]["Xmx"] = JVMArgs::NonStandard.new("-Xmx#{percentage_ram}M")
-      @args[:nonstandard]["Xms"] = JVMArgs::NonStandard.new("-Xms#{percentage_ram}M")
+      @args[:nonstandard]["Xmx"] = JVMArgs::NonStandard.new("-Xmx#{size_ram}")
+      @args[:nonstandard]["Xms"] = JVMArgs::NonStandard.new("-Xms#{size_ram}")
+    end
+
+    def permgen(size)
+      size_ram = JVMArgs::Util.convert_to_m(size)
+      @args[:unstable]["MaxPermSize"] = JVMArgs::Unstable.new("-XX:MaxPermSize=#{size_ram}")
+    end
+
+    def newgen(size)
+      size_ram = JVMArgs::Util.convert_to_m(size)
+      # @args[:unstable]["NewSize"] = JVMArgs::Unstable.new("-XX:NewSize=#{size_ram}")
+      @args[:unstable]["MaxNewSize"] = JVMArgs::Unstable.new("-XX:MaxNewSize=#{size_ram}")
     end
 
     def add_rule(rule_name, &block)
