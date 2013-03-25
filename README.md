@@ -85,6 +85,18 @@ args.add_rule(:equal_max_min_heap) do |args|
   value = args[:nonstandard]['Xmx'].value
   args[:nonstandard]['Xms'].value = value JVMArgs::NonStandard.new("Xms#{value}")
 end
+
+Here is a rule to raise an error if -XX:MaxPermSize  is less than 256M
+
+args = JVMArgs::Args.new("Xmx256M")
+# process more args here, possibly from node attributes
+args.add_rule(:min_permgen) do |args|
+  value = args[:unstable]['MaxPermSize'].value
+  value_num = JVMArgs::Utils.get_raw_num(value)
+  if value_num < 256
+    raise ArgumentError, "This application requires at least 256M of permgen, you supplied #{value}"
+  end
+end
 ```
 
 Examples
