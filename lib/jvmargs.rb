@@ -4,7 +4,6 @@ require 'jvmargs/directive'
 require 'jvmargs/standard'
 require 'jvmargs/nonstandard'
 require 'jvmargs/unstable'
-require 'jvmargs/ruleset'
 require 'jvmargs/rules'
 require 'jvmargs/util'
 

@@ -3,6 +3,7 @@ module JVMArgs
     
     def initialize(*initial_args,&block)
       @args = Hash.new
+      @rules = JVMArgs::Rules.new
       Types.each {|type| @args[type] = Hash.new }
       server_arg = JVMArgs::Standard.new("-server")
       @args[:standard][server_arg.key] = server_arg
@@ -23,9 +24,8 @@ module JVMArgs
     end
     
     def process_rules
-      JVMArgs::Rules.rules.each do |rule|
-        require 'pry' ; binding.pry
-        JVMArgs::Rules.send(rule, @args)
+      @rules.rules.each do |rule|
+       @rules.send(rule, @args)
       end
     end
     
@@ -61,6 +61,7 @@ module JVMArgs
     end
     
     def to_s
+      process_rules
       args_str = ""
       Types.each do |type|
         type_str = @args[type].map {|k,v| v.to_s }
@@ -104,12 +105,12 @@ module JVMArgs
       end
       percent_int = JVMArgs::Util.get_system_ram_m.sub(/M/,'').to_i
       percentage_ram = (percent_int * percent).to_i
-      @args[:nonstandard]["Xmx"] = "-Xmx#{percentage_ram}M"
-      @args[:nonstandard]["Xms"] = "-Xms#{percentage_ram}M"
+      @args[:nonstandard]["Xmx"] = JVMArgs::NonStandard.new("-Xmx#{percentage_ram}M")
+      @args[:nonstandard]["Xms"] = JVMArgs::NonStandard.new("-Xms#{percentage_ram}M")
     end
 
     def add_rule(rule_name, &block)
-      JVMArgs::Rules.add(rule_name, block)
+      @rules.add(rule_name, block)
     end
 
   end

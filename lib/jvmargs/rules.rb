@@ -1,20 +1,31 @@
 module JVMArgs
   class Rules 
 
-    def self.add(rule_name, block)
-      JVMArgs::Rules.define_singleton_method(rule_name.to_sym) {|args| block.call(args) }
+    def initialize(*args)
+      @rules = []
     end
 
-    def self.rules
-      JVMArgs::Rules.singleton_methods(false)
+    def each
+      @rules.each do |rule|
+        yield(rule)
+      end
     end
     
-    def self.[](index)
+    def add(rule_name, block)
+      new_rule_name = "rule_#{rule_name.to_s}".to_sym
+      JVMArgs::Rules.define_method(new_rule_name) {|args| block.call(args) }
+    end
+
+    def rules
+      JVMArgs::Rules.public_instance_methods(false).select {|rule| rule.to_s =~ /^rule_.*/  }
+    end
+    
+    def [](index)
       @rules[index]
     end
 
     
-    def self.heap_too_big(key="Xmx",args)
+    def rule_heap_too_big(key="Xmx",args)
       total_ram = JVMArgs::Util.get_raw_num(JVMArgs::Util.get_system_ram_m)
       new_ram = JVMArgs::Util.get_raw_num(args[:nonstandard][key].value)
       if new_ram > total_ram
@@ -22,7 +33,7 @@ module JVMArgs
       end
     end
 
-    def self.max_smaller_than_min(key="Xmx",args)
+    def rule_max_smaller_than_min(key="Xmx",args)
       if args[:nonstandard]["Xms"].nil?
         return
       else
@@ -36,10 +47,5 @@ module JVMArgs
 
   end
 end
-
-  # HeapRules = [
-  #              method(:heap_too_big).to_proc,
-  #              method(:max_smaller_than_min).to_proc
-  #             ]
 
   
