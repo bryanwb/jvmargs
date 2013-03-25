@@ -121,6 +121,12 @@ module JVMArgs
       @args[:unstable]["MaxPermSize"] = JVMArgs::Unstable.new("-XX:MaxPermSize=#{size_ram}")
     end
 
+    def newgen(size)
+      size_ram = JVMArgs::Util.convert_to_m(size)
+      # @args[:unstable]["NewSize"] = JVMArgs::Unstable.new("-XX:NewSize=#{size_ram}")
+      @args[:unstable]["MaxNewSize"] = JVMArgs::Unstable.new("-XX:MaxNewSize=#{size_ram}")
+    end
+
     def add_rule(rule_name, &block)
       @rules.add(rule_name, block)
     end

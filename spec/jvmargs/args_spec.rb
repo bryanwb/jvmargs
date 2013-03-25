@@ -43,6 +43,13 @@ describe JVMArgs::Args do
     args_str = args.to_s
     args_str.should include "-XX:MaxPermSize=#{size}"
   end
+
+  it "set newgen in MB" do
+    size = "32M"
+    args = JVMArgs::Args.new { newgen size }
+    args_str = args.to_s
+    args_str.should include "-XX:MaxNewSize=#{size}"
+  end
   
   it "sets the max heap size to 40% of available RAM if not specified" do
     total_ram = JVMArgs::Util.get_system_ram_m

@@ -151,6 +151,7 @@ require 'jvmargs'
 java_opts = JVMArgs::Args.new("-Xmx512M", "-XX:MaxPermSize=256m"){jmx true} 
 java_opts.heap_size("2048M")
 java_opts.permgen("256M")
+java_opts.newgen("32M")
 # the -Xmx and -Xms arguments are now "-Xmx2048M" and "-Xms2048M"
 # permgen is now "-XX:MaxPermSize=256M"
 ```
