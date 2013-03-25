@@ -13,7 +13,7 @@ module JVMArgs
     
     def add(rule_name, block)
       new_rule_name = "rule_#{rule_name.to_s}".to_sym
-      JVMArgs::Rules.define_method(new_rule_name) {|args| block.call(args) }
+      self.class.send(:define_method, new_rule_name) {|args| block.call(args) }
     end
 
     def rules
