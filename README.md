@@ -159,6 +159,7 @@ java_opts.newgen("32M")
 ## License and Author
 
 - Author::                Bryan W. Berry (<bryan.berry@gmail.com>)
+- Author::                Xabier de Zuazo (<xabier@onddo.com>)  
 - Copyright::             2013, Bryan W. Berry
 
 
