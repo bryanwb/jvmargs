@@ -28,12 +28,12 @@ JVMArgs will ensure that only one value is stored for any given
 option. Here is a quick example:
 
 ```Ruby
-args = JVMArgs::Args.new("-XX:-DisableExplicitGC", "-Xmx256M")
-# "-XX:-DisableExplicitGC" is now stored in args
-args.add("-XX:+DisableExplicitGC")
-args.add("-Xmx2G")
+java_opts = JVMArgs::Args.new("-XX:-DisableExplicitGC", "-Xmx256M")
+# "-XX:-DisableExplicitGC" is now stored in java_opts
+java_opts.add("-XX:+DisableExplicitGC")
+java_opts.add("-Xmx2G")
 # the settings are now "-XX:+DisableExplicitGC" and "-Xmx2G"
-args.to_s
+java_opts.to_s
 " -server -XX:+DisableExplicitGC -Xmx2G "
 ```
 
