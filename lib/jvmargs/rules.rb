@@ -25,7 +25,7 @@ module JVMArgs
     end
 
     
-    def rule_heap_too_big(key="Xmx",args)
+    def rule_heap_too_big(args, key="Xmx")
       total_ram = JVMArgs::Util.get_raw_num(JVMArgs::Util.get_system_ram_m)
       new_ram = JVMArgs::Util.get_raw_num(args[:nonstandard][key].value)
       if new_ram > total_ram
@@ -33,7 +33,7 @@ module JVMArgs
       end
     end
 
-    def rule_max_smaller_than_min(key="Xmx",args)
+    def rule_max_smaller_than_min(args, key="Xmx")
       if args[:nonstandard]["Xms"].nil?
         return
       else
