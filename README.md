@@ -80,8 +80,8 @@ You can also add arbitrary rules that are enforced when the `to_s`
 method is called. 
 
 ```Ruby
-args = JVMArgs::Args.new("Xmx256M")
-args.add_rule(:equal_max_min_heap) do |args|
+java_opts = JVMArgs::Args.new("Xmx256M")
+java_opts.add_rule(:equal_max_min_heap) do |args|
   value = args[:nonstandard]['Xmx'].value
   args[:nonstandard]['Xms'] = JVMArgs::NonStandard.new("Xms#{value}")
 end
@@ -90,9 +90,9 @@ end
 Here is a rule to raise an error if -XX:MaxPermSize  is less than 256M
 
 ```Ruby
-args = JVMArgs::Args.new("Xmx256M")
+java_opts = JVMArgs::Args.new("Xmx256M")
 # process more args here, possibly from node attributes
-args.add_rule(:min_permgen) do |args|
+java_opts.add_rule(:min_permgen) do |args|
   value = args[:unstable]['MaxPermSize'].value
   value_num = JVMArgs::Utils.get_raw_num(value)
   if value_num < 256
