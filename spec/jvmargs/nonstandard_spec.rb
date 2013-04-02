@@ -23,5 +23,10 @@ describe JVMArgs::NonStandard do
     arg = JVMArgs::NonStandard.new("-Xint")
     arg.to_s.should == "-Xint"
   end
+
+  it "handles numeric value < 1MB" do
+    arg = JVMArgs::NonStandard.new("-Xss122k")
+    arg.to_s.should == "-Xss122K"
+  end
   
 end

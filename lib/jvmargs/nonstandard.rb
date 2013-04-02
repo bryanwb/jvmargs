@@ -10,6 +10,10 @@ module JVMArgs
         @value =  true
       else
         @value = JVMArgs::Util.convert_to_m($2)
+        # value is a kilobyte value < 1 MB after conversion
+        if @value == "0M"
+          @value = JVMArgs::Util.normalize_units($2).join('')
+        end
       end
     end
     
