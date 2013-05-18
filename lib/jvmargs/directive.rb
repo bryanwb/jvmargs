@@ -5,13 +5,13 @@ module JVMArgs
     attr_accessor :key, :value
 
     def initialize(arg)
-      arg.sub!(/^-?D?/, '')
+      stripped = arg.sub(/^-?D?/, '')
     
-      if arg =~ /(.*?)=(.*)/
+      if stripped =~ /(.*?)=(.*)/
         @key = $1
         @value = $2
       else
-        @key = arg
+        @key = stripped
         @value = true
       end
     end
