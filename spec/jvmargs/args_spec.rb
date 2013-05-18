@@ -132,13 +132,16 @@ describe JVMArgs::Args do
     nonstandard = '-Xmx100M'
     directive = '-Dsome.property=123'
     unstable = '-XX:NewRatio=2'
-
-    args = JVMArgs::Args.new(standard, nonstandard, directive, unstable)
+    args_list = [[standard, nonstandard], [directive, unstable]]
+    args = JVMArgs::Args.new(args_list)
 
     standard.should eq '-jar foo.jar'
     nonstandard.should eq '-Xmx100M'
     directive.should eq '-Dsome.property=123'
     unstable.should eq '-XX:NewRatio=2'
+
+    args_list.should eq [[standard, nonstandard], [directive, unstable]]
   end
+
 end
 
