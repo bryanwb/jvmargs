@@ -126,6 +126,19 @@ describe JVMArgs::Args do
     args_str = args.to_s
     args_str.should include "-Xms200M"
   end
-  
+
+  it "does not modify its arguments" do
+    standard = '-jar foo.jar'
+    nonstandard = '-Xmx100M'
+    directive = '-Dsome.property=123'
+    unstable = '-XX:NewRatio=2'
+
+    args = JVMArgs::Args.new(standard, nonstandard, directive, unstable)
+
+    standard.should eq '-jar foo.jar'
+    nonstandard.should eq '-Xmx100M'
+    directive.should eq '-Dsome.property=123'
+    unstable.should eq '-XX:NewRatio=2'
+  end
 end
 
