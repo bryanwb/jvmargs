@@ -94,7 +94,7 @@ java_opts = JVMArgs::Args.new("Xmx256M")
 # process more args here, possibly from node attributes
 java_opts.add_rule(:min_permgen) do |args|
   value = args[:unstable]['MaxPermSize'].value
-  value_num = JVMArgs::Utils.get_raw_num(value)
+  value_num = JVMArgs::Util.get_raw_num(value)
   if value_num < 256
     raise ArgumentError, "This application requires at least 256M of permgen, you supplied #{value}"
   end
