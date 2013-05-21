@@ -3,8 +3,8 @@ module JVMArgs
     attr_accessor :key, :value
     
     def initialize(arg)
-      arg.sub!(/^-/, '')
-      arg =~ /(X[a-z]+)([0-9]+[a-zA-Z])?/
+      stripped = arg.sub(/^-/, '')
+      stripped =~ /(X[a-z]+)([0-9]+[a-zA-Z])?/
       @key = $1
       if $2.nil?
         @value =  true

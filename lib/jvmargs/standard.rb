@@ -5,8 +5,8 @@ module JVMArgs
     attr_accessor :key, :value
     
     def initialize(arg)
-      arg.sub!(/^-/, '')
-      @key = arg
+      stripped = arg.sub(/^-/, '')
+      @key = stripped 
       @value = true
     end
        

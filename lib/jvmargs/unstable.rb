@@ -4,14 +4,14 @@ module JVMArgs
    attr_accessor :key, :value
     
     def initialize(arg)
-      arg.sub!(/^-?XX:/, '')
+      stripped = arg.sub(/^-?XX:/, '')
       # check it if a boolean option
-      arg =~ /(\+|-)(.*)/
+      stripped =~ /(\+|-)(.*)/
       if !$1.nil?
         @key = $2
         @value = $1 == '+' ? true : false
       else
-        arg =~ /(.*)=(.*)/
+        stripped =~ /(.*)=(.*)/
         @key = $1
         @value = $2
       end
