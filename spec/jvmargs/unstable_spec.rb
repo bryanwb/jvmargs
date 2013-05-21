@@ -30,5 +30,11 @@ describe JVMArgs::Unstable do
     arg.key.should == "AltStackSize"
     arg.value.should == "16384"
   end
-  
+
+  it "should not modify its arguments" do
+    initial_arg = "-XX:AltStackSize=16384"
+    arg = JVMArgs::Unstable.new(initial_arg)
+
+    initial_arg.should eq "-XX:AltStackSize=16384"
+  end
 end

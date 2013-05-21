@@ -28,7 +28,13 @@ describe JVMArgs::Directive do
     arg = JVMArgs::Directive.new("-Djava.util.logging.config.file=/foo/conf/logging.properties")
     arg.to_s.should == "-Djava.util.logging.config.file=/foo/conf/logging.properties"
   end
-  
+
+  it "does not modify its arguments" do
+    initial_arg = '-Dsome.property=foo'
+    arg = JVMArgs::Directive.new(initial_arg)
+
+    initial_arg.should eq '-Dsome.property=foo'
+  end
 end
 
 

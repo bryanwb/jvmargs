@@ -28,5 +28,11 @@ describe JVMArgs::NonStandard do
     arg = JVMArgs::NonStandard.new("-Xss122k")
     arg.to_s.should == "-Xss122K"
   end
-  
+
+  it "does not modify its arguments" do
+    input_arg = '-Xmx100M'
+    arg = JVMArgs::NonStandard.new(input_arg)
+
+    input_arg.should eq '-Xmx100M'
+  end
 end
