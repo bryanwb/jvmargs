@@ -2,7 +2,7 @@ require 'jvmargs'
 require 'spec_helper'
 
 describe JVMArgs::Util do
-
+  
   it "returns system ram in megabytes" do
     require 'ohai'
     ohai = Ohai::System.new
@@ -24,4 +24,13 @@ describe JVMArgs::Util do
     JVMArgs::Util.convert_to_m("78G").should == "79872M"
   end
   
+  describe "parse_ram_size_to_m" do
+    it "parses memory sizes" do
+      JVMArgs::Util.parse_ram_size_to_m("73m").should == "73M"
+      JVMArgs::Util.parse_ram_size_to_m("1G").should == "1024M"
+    end
+    it "parses percentage" do
+      JVMArgs::Util.parse_ram_size_to_m("100%").should == JVMArgs::Util.get_system_ram_m
+    end
+  end
 end
