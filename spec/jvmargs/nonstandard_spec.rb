@@ -33,6 +33,11 @@ describe JVMArgs::NonStandard do
     input_arg = '-Xmx100M'
     arg = JVMArgs::NonStandard.new(input_arg)
 
-    input_arg.should eq '-Xmx100M'
+    arg.to_s.should == '-Xmx100M'
+  end
+  
+  it "handles parameterised values" do
+    arg = JVMArgs::NonStandard.new('-Xloggc:/var/log/gc.log')    
+    arg.to_s.should == '-Xloggc:/var/log/gc.log'
   end
 end
