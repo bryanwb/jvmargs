@@ -4,10 +4,10 @@ module JVMArgs
     
     def initialize(arg)
       stripped = arg.sub(/^-/, '')
-      stripped =~ /(X[a-z]+)([0-9]+[a-zA-Z])?/
+      stripped =~ /(X[a-z]+:?)([0-9]+[a-zA-Z])?/
       if $2.nil?
-        @key = stripped # ignore the $1 as could be a -Xthing:that type
-        @value = true
+        @key = $1 
+        @value = stripped[@key.length..-1] # could be an empty string
       else
         @key = $1
         @value = JVMArgs::Util.convert_to_m($2)
@@ -19,11 +19,7 @@ module JVMArgs
     end
     
     def to_s
-      if @value == true
-        "-#{@key}"
-      else
-        "-#{@key}#{@value}"
-      end
+      "-#{@key}#{@value}"
     end
   end
 end

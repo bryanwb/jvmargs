@@ -40,4 +40,10 @@ describe JVMArgs::NonStandard do
     arg = JVMArgs::NonStandard.new('-Xloggc:/var/log/gc.log')    
     arg.to_s.should == '-Xloggc:/var/log/gc.log'
   end
+  
+  it "parameterised arg should seperate on :" do
+    arg = JVMArgs::NonStandard.new('-Xshare:auto')    
+    arg.key.should == 'Xshare:'
+  end
+  
 end
