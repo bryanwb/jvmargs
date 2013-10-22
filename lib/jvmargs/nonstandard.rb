@@ -4,11 +4,12 @@ module JVMArgs
     
     def initialize(arg)
       stripped = arg.sub(/^-/, '')
-      stripped =~ /(X[a-z]+)([0-9]+[a-zA-Z])?/
-      @key = $1
+      stripped =~ /(X[a-z]+:?)([0-9]+[a-zA-Z])?/
       if $2.nil?
-        @value =  true
+        @key = $1 
+        @value = stripped[@key.length..-1] # could be an empty string
       else
+        @key = $1
         @value = JVMArgs::Util.convert_to_m($2)
         # value is a kilobyte value < 1 MB after conversion
         if @value == "0M"
@@ -18,11 +19,7 @@ module JVMArgs
     end
     
     def to_s
-      if @value == true
-        "-#{@key}"
-      else
-        "-#{@key}#{@value}"
-      end
+      "-#{@key}#{@value}"
     end
   end
 end
