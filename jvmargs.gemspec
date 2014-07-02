@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.version = JVMArgs::VERSION
   s.description = 'Sanity check command-line arguments to the JVM'
   s.summary = "jvmargs-#{s.version}"
-  s.authors = ['Bryan W. Berry']
+  s.authors = ['Bryan W. Berry', 'Thom May']
   s.homepage = 'https://github.com/bryanwb/jvmargs'
   s.license = 'Apache2'
   s.require_path = 'lib'
