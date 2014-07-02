@@ -8,7 +8,11 @@ module JVMArgs
       else
         require 'ohai'
         ohai = Ohai::System.new
-        ohai.require_plugin "linux::memory"
+        begin
+          ohai.all_plugins "memory"
+        rescue ArgumentError
+          ohai.require_plugin "linux::memory"
+        end
         total_ram = ohai["memory"]["total"]
       end
       self.convert_to_m(total_ram)
