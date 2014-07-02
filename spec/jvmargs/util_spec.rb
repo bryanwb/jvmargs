@@ -4,11 +4,7 @@ require 'spec_helper'
 describe JVMArgs::Util do
   
   it "returns system ram in megabytes" do
-    require 'ohai'
-    ohai = Ohai::System.new
-    ohai.require_plugin "linux::memory"
-    total_ram = ohai["memory"]["total"]
-    total_ram_m = JVMArgs::Util.convert_to_m(total_ram)
+    total_ram_m = JVMArgs::Util.convert_to_m('24G')
     expect(JVMArgs::Util.get_system_ram_m).to eq(total_ram_m)
   end
   
