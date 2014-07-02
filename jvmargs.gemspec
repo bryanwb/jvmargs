@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.files = Dir['lib/**/*.rb']
   
   s.add_dependency('chef', '>= 10.0')
-  s.add_development_dependency('rspec', '~> 2.13.0')
+  s.add_development_dependency('rspec', '~> 3.0.0')
   s.add_development_dependency('rake', '~> 0.9.2.2')
   s.add_development_dependency('pry')
 end

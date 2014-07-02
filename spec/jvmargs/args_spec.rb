@@ -6,26 +6,26 @@ describe JVMArgs::Args do
   it "provides default arguments" do
     args = JVMArgs::Args.new
     args_str = args.to_s
-    args_str.should include "-server"
-    args_str.should include "-Xmx"
+    expect(args_str).to include "-server"
+    expect(args_str).to include "-Xmx"
   end
 
   it "provide jmx values if specified by block" do
     args = JVMArgs::Args.new(){ jmx true}
     args_str = args.to_s
-    args_str.should include "-Djava.rmi.server.hostname=127.0.0.1"
-    args_str.should include "-Dcom.sun.management.jmxremote"
-    args_str.should include "-Dcom.sun.management.jmxremote.port=9000"
-    args_str.should include "-Dcom.sun.management.jmxremote.authenticate=false"
-    args_str.should include "-Dcom.sun.management.jmxremote.ssl=false"
+    expect(args_str).to include "-Djava.rmi.server.hostname=127.0.0.1"
+    expect(args_str).to include "-Dcom.sun.management.jmxremote"
+    expect(args_str).to include "-Dcom.sun.management.jmxremote.port=9000"
+    expect(args_str).to include "-Dcom.sun.management.jmxremote.authenticate=false"
+    expect(args_str).to include "-Dcom.sun.management.jmxremote.ssl=false"
   end
 
   it "set heap_size in MB" do
     size = "1234M"
     args = JVMArgs::Args.new { heap_size size }
     args_str = args.to_s
-    args_str.should include "-Xms#{size}"
-    args_str.should include "-Xmx#{size}"
+    expect(args_str).to include "-Xms#{size}"
+    expect(args_str).to include "-Xmx#{size}"
   end
   
   it "set heap_size by a percentage" do
@@ -33,42 +33,42 @@ describe JVMArgs::Args do
     args_str = args.to_s
     percent_int = JVMArgs::Util.get_system_ram_m.sub(/M/,'').to_i
     percentage_ram = (percent_int * 0.7).to_i
-    args_str.should include "-Xms#{percentage_ram}M"
-    args_str.should include "-Xmx#{percentage_ram}M"
+    expect(args_str).to include "-Xms#{percentage_ram}M"
+    expect(args_str).to include "-Xmx#{percentage_ram}M"
   end
 
   it "set permgen in MB" do
     size = "123M"
     args = JVMArgs::Args.new { permgen size }
     args_str = args.to_s
-    args_str.should include "-XX:MaxPermSize=#{size}"
+    expect(args_str).to include "-XX:MaxPermSize=#{size}"
   end
 
   it "set newgen in MB" do
     size = "32M"
     args = JVMArgs::Args.new { newgen size }
     args_str = args.to_s
-    args_str.should include "-XX:MaxNewSize=#{size}"
+    expect(args_str).to include "-XX:MaxNewSize=#{size}"
   end
   
   it "sets the max heap size to 40% of available RAM if not specified" do
     total_ram = JVMArgs::Util.get_system_ram_m
     heap_size = total_ram.to_i * 0.4
     args = JVMArgs::Args.new
-    args.to_s.should include "-Xmx#{heap_size.to_i}M"
+    expect(args.to_s).to include "-Xmx#{heap_size.to_i}M"
   end
   
   it "overwrites an existing argument w/ new value" do
     args = JVMArgs::Args.new("-Xmx295M", "Xms295M")
-    args.to_s.should include "-Xmx295M"
-    args[:nonstandard]["Xmx"].value.should == "295M"
-    args[:nonstandard]["Xms"].value.should == "295M"
+    expect(args.to_s).to include "-Xmx295M"
+    expect(args[:nonstandard]["Xmx"].value).to eq("295M")
+    expect(args[:nonstandard]["Xms"].value).to eq("295M")
   end
 
   it "overwrites an existing argument w/ add method" do
     args = JVMArgs::Args.new("-Xmx295M")
     args.add("Xmx512M")
-    args[:nonstandard]["Xmx"].value.should == "512M"
+    expect(args[:nonstandard]["Xmx"].value).to eq("512M")
   end
 
   
@@ -105,15 +105,15 @@ describe JVMArgs::Args do
     target_list.sort!
     sorted_args = args.to_s.split(" ").select {|arg| arg != " " }
     sorted_args.sort!
-    sorted_args.should =~ target_list
+    expect(sorted_args).to match(target_list)
   end
 
   it "won't let you set heap size greater than system ram" do
-    lambda { JVMArgs::Args.new("-Xmx9999999999999K") }.should raise_error(ArgumentError)
+    expect { JVMArgs::Args.new("-Xmx9999999999999K") }.to raise_error(ArgumentError)
   end
 
   it "won't let you set heap size greater than minimum heap size" do
-    lambda { JVMArgs::Args.new("-Xmx99M", "-Xms200M") }.should raise_error(ArgumentError)
+    expect { JVMArgs::Args.new("-Xmx99M", "-Xms200M") }.to raise_error(ArgumentError)
   end
 
   it "allows you to define a new rule" do
@@ -124,7 +124,7 @@ describe JVMArgs::Args do
       args[:nonstandard]['Xms'].value = value
     end
     args_str = args.to_s
-    args_str.should include "-Xms200M"
+    expect(args_str).to include "-Xms200M"
   end
 
   it "does not modify its arguments" do
@@ -135,12 +135,12 @@ describe JVMArgs::Args do
     args_list = [[standard, nonstandard], [directive, unstable]]
     args = JVMArgs::Args.new(args_list)
 
-    standard.should eq '-jar foo.jar'
-    nonstandard.should eq '-Xmx100M'
-    directive.should eq '-Dsome.property=123'
-    unstable.should eq '-XX:NewRatio=2'
+    expect(standard).to eq '-jar foo.jar'
+    expect(nonstandard).to eq '-Xmx100M'
+    expect(directive).to eq '-Dsome.property=123'
+    expect(unstable).to eq '-XX:NewRatio=2'
 
-    args_list.should eq [[standard, nonstandard], [directive, unstable]]
+    expect(args_list).to eq [[standard, nonstandard], [directive, unstable]]
   end
 
 end
