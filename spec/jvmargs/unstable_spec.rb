@@ -37,4 +37,10 @@ describe JVMArgs::Unstable do
 
     expect(initial_arg).to eq "-XX:AltStackSize=16384"
   end
+
+  it "should parse paths with '-' in them" do
+    arg = JVMArgs::Unstable.new("-XX:ErrorPath=/var/thing-that/foo-bar")
+    expect(arg.key).to eq("ErrorPath")
+    expect(arg.value).to eq("/var/thing-that/foo-bar")
+  end
 end
