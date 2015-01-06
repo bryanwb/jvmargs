@@ -6,7 +6,7 @@ module JVMArgs
     def initialize(arg)
       stripped = arg.sub(/^-?XX:/, '')
       # check it if a boolean option
-      stripped =~ /(\+|-)(.*)/
+      stripped =~ /^(\+|-)(.*)$/
       if !$1.nil?
         @key = $2
         @value = $1 == '+' ? true : false
